@@ -1,7 +1,7 @@
 <script>
   import PrayerTracker from './PrayerTracker.svelte';
   import FastingLog from './FastingLog.svelte';
-  import { getAuth } from '../stores/auth.js';
+  import { getAuth } from '../stores/auth.svelte.js';
   import { todayStr } from '../lib/timeUtils.js';
 
   let { onauthopen } = $props();

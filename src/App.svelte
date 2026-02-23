@@ -7,9 +7,9 @@
   import ChatView from './components/ChatView.svelte';
   import Settings from './components/Settings.svelte';
   import AuthModal from './components/AuthModal.svelte';
-  import { initLocation, getLocation } from './stores/location.js';
-  import { loadPrayerTimes, getPrayerTimes } from './stores/prayerTimes.js';
-  import { getAuth, initAuth, signOut } from './stores/auth.js';
+  import { initLocation, getLocation } from './stores/location.svelte.js';
+  import { loadPrayerTimes, getPrayerTimes } from './stores/prayerTimes.svelte.js';
+  import { getAuth, initAuth, signOut } from './stores/auth.svelte.js';
 
   let activeTab = $state('home');
   let settingsOpen = $state(false);

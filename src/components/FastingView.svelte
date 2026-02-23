@@ -10,10 +10,10 @@
   import { timeToMinutes, minutesToTime, formatCountdown, nowMinutes } from '../lib/timeUtils.js';
   import { getRamadanInfo, getFastPhase } from '../lib/ramadan.js';
   import { getGuidance } from '../lib/guidance.js';
-  import { getLocation } from '../stores/location.js';
-  import { getPrayerTimes } from '../stores/prayerTimes.js';
+  import { getLocation } from '../stores/location.svelte.js';
+  import { getPrayerTimes } from '../stores/prayerTimes.svelte.js';
 
-  import { getAuth } from '../stores/auth.js';
+  import { getAuth } from '../stores/auth.svelte.js';
 
   let { onsettingsopen, onauthopen } = $props();
 

@@ -1,5 +1,5 @@
 <script>
-  import { getAuth, signIn, signUp, clearError } from '../stores/auth.js';
+  import { getAuth, signIn, signUp, clearError } from '../stores/auth.svelte.js';
 
   let { open = false, onclose } = $props();
 

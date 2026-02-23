@@ -1,7 +1,7 @@
 <script>
   import { onMount, onDestroy, tick } from 'svelte';
-  import { getLocation } from '../stores/location.js';
-  import { getAuth } from '../stores/auth.js';
+  import { getLocation } from '../stores/location.svelte.js';
+  import { getAuth } from '../stores/auth.svelte.js';
   import { clasp } from '../lib/clasp.js';
   import { saveMessage, getMessages, cleanOldMessages } from '../lib/chatStore.js';
 

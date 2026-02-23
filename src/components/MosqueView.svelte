@@ -1,6 +1,6 @@
 <script>
   import { onMount } from 'svelte';
-  import { getLocation } from '../stores/location.js';
+  import { getLocation } from '../stores/location.svelte.js';
   import { fetchNearbyMosques, formatDistance, openInMaps } from '../lib/mosqueApi.js';
 
   const location = getLocation();
