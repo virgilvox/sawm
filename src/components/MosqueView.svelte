@@ -9,8 +9,7 @@
   let loading = $state(false);
   let error = $state('');
   let radius = $state(5);
-
-  const radii = [2, 5, 10];
+  let searchTimer;
 
   async function search(r) {
     radius = r;
@@ -29,11 +28,17 @@
     loading = false;
   }
 
+  function handleSlider(e) {
+    const val = parseInt(e.target.value);
+    radius = val;
+    clearTimeout(searchTimer);
+    searchTimer = setTimeout(() => search(val), 400);
+  }
+
   onMount(() => {
     if (location.lat && location.lng) search(radius);
   });
 
-  // Re-search when location becomes available
   $effect(() => {
     if (location.lat && location.lng && !mosques.length && !loading) {
       search(radius);
@@ -49,12 +54,17 @@
 
 <div class="section fade-in">
   <div class="section-header">search radius</div>
-  <div class="radius-select">
-    {#each radii as r}
-      <button class="radius-btn" class:active={radius === r} onclick={() => search(r)}>
-        {r}km
-      </button>
-    {/each}
+  <div class="radius-slider">
+    <input
+      type="range"
+      min="1"
+      max="25"
+      step="1"
+      value={radius}
+      oninput={handleSlider}
+      class="slider"
+    >
+    <div class="radius-value">{radius} km</div>
   </div>
 </div>
 

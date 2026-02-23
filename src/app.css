@@ -847,27 +847,47 @@ button.term {
   color: var(--amber);
   font-weight: 500;
 }
-.radius-select {
+.radius-slider {
   display: flex;
-  gap: 8px;
+  align-items: center;
+  gap: 12px;
   margin-bottom: 16px;
 }
-.radius-btn {
-  padding: 6px 14px;
-  background: var(--surface-2);
-  border: 1px solid var(--border);
-  border-radius: 4px;
-  color: var(--text-dim);
-  font-family: var(--mono);
-  font-size: 11px;
-  cursor: pointer;
-  transition: all 0.15s;
-}
-.radius-btn:hover { border-color: var(--amber-dim); }
-.radius-btn.active {
-  background: var(--amber-glow);
-  border-color: var(--amber-dim);
+.radius-value {
+  font-size: 13px;
+  font-weight: 500;
   color: var(--amber);
+  min-width: 48px;
+  text-align: right;
+}
+.slider {
+  flex: 1;
+  -webkit-appearance: none;
+  appearance: none;
+  height: 4px;
+  background: var(--surface-3);
+  border-radius: 2px;
+  outline: none;
+}
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--amber);
+  cursor: pointer;
+  border: 2px solid var(--bg);
+  box-shadow: 0 0 6px rgba(212, 160, 67, 0.3);
+}
+.slider::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--amber);
+  cursor: pointer;
+  border: 2px solid var(--bg);
+  box-shadow: 0 0 6px rgba(212, 160, 67, 0.3);
 }
 
 /* CHAT VIEW */
@@ -876,14 +896,117 @@ button.term {
   flex-direction: column;
   height: calc(100vh - 160px);
 }
+.chat-rooms-bar {
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border);
+}
+.chat-rooms-scroll {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  padding: 2px 0;
+}
+.chat-rooms-scroll::-webkit-scrollbar { display: none; }
+.chat-room-pill {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 5px 10px;
+  border-radius: 3px;
+  font-family: var(--mono);
+  font-size: 11px;
+  white-space: nowrap;
+  cursor: pointer;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text-dim);
+  transition: all 0.15s;
+}
+.chat-room-pill:hover { border-color: var(--amber-dim); color: var(--text-mid); }
+.chat-room-pill.active {
+  border-color: var(--amber-dim);
+  background: var(--amber-glow);
+  color: var(--amber);
+}
+.chat-room-pill.add-room {
+  border-style: dashed;
+  color: var(--text-dim);
+  padding: 5px 8px;
+}
+.chat-room-pill.add-room:hover { border-color: var(--amber-dim); color: var(--amber); }
+.room-remove {
+  margin-left: 4px;
+  opacity: 0.4;
+  cursor: pointer;
+  display: inline-flex;
+}
+.room-remove:hover { opacity: 1; }
+.add-city-form {
+  display: flex;
+  gap: 6px;
+  padding: 8px 0;
+}
+.add-city-input {
+  flex: 1;
+  padding: 6px 8px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  color: var(--text);
+  font-family: var(--mono);
+  font-size: 12px;
+  outline: none;
+}
+.add-city-input:focus { border-color: var(--amber-dim); }
+.add-city-input::placeholder { color: var(--text-dim); }
+.add-city-btn {
+  padding: 6px 12px;
+  background: var(--amber-glow);
+  border: 1px solid var(--amber-dim);
+  border-radius: 3px;
+  color: var(--amber);
+  font-family: var(--mono);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.add-city-btn:hover { border-color: var(--amber); }
+.chat-room-status {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 0;
+  margin-bottom: 8px;
+}
 .chat-room-name {
   font-size: 11px;
   color: var(--text-dim);
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  padding: 8px 0;
-  border-bottom: 1px solid var(--border);
-  margin-bottom: 12px;
+}
+.chat-presence {
+  font-size: 10px;
+  color: var(--text-dim);
+  letter-spacing: 0.04em;
+}
+.chat-typing {
+  font-size: 11px;
+  color: var(--text-dim);
+  padding: 4px 0;
+  font-style: italic;
+}
+.typing-dots span {
+  animation: typingBlink 1.4s infinite;
+}
+.typing-dots span:nth-child(2) { animation-delay: 0.2s; }
+.typing-dots span:nth-child(3) { animation-delay: 0.4s; }
+@keyframes typingBlink {
+  0%, 60%, 100% { opacity: 0.2; }
+  30% { opacity: 1; }
 }
 .chat-messages {
   flex: 1;
