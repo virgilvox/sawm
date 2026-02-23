@@ -1,0 +1,16 @@
+export const GLOSSARY = {
+  'Fajr': 'the pre-dawn prayer. marks the start of the daily fast.',
+  'Suhoor': 'the pre-dawn meal eaten before fajr. your fuel for the day.',
+  'Dhuhr': 'the midday prayer, when the sun passes its zenith.',
+  'Asr': 'the afternoon prayer, in the later part of the day.',
+  'Maghrib': 'the sunset prayer. marks the end of the daily fast.',
+  'Iftar': 'the meal to break your fast at sunset. traditionally dates and water first.',
+  'Isha': 'the night prayer, after twilight has disappeared.',
+  'Taraweeh': 'extra night prayers performed during ramadan after isha.',
+  'Ramadan': 'the 9th month of the islamic calendar. a month of fasting, reflection, and community.',
+  'Sawm': 'fasting. one of the five pillars of islam.',
+  'Qibla': 'the direction of the kaaba in mecca, faced during prayer.',
+  'Duas': 'personal prayers or supplications to god.',
+  'Zakat': 'obligatory charity, one of the five pillars.',
+  'Laylatul Qadr': 'the night of power, believed to be in the last 10 nights of ramadan.',
+};
