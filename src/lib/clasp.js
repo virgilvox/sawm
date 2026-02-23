@@ -3,6 +3,13 @@ import { ClaspBuilder } from '@clasp-to/core';
 const RELAY_URL = 'wss://relay.clasp.to';
 const MAX_HISTORY = 20;
 
+// Suppress noisy clasp ACK debug logs
+const _debug = console.debug;
+console.debug = (...args) => {
+  if (typeof args[0] === 'string' && args[0].startsWith('CLASP')) return;
+  _debug.apply(console, args);
+};
+
 let client = null;
 let currentRoom = '';
 let messageHandler = null;
@@ -16,6 +23,10 @@ let unsubs = [];
 let typingTimer = null;
 let presenceInterval = null;
 let _displayName = 'anonymous';
+
+// Local state tracked from subscription callbacks
+const presenceMap = new Map();  // address -> { name, since }
+const typingMap = new Map();    // address -> { name, at }
 
 function roomAddr(room, path) {
   return `/chat/room/${room}/${path}`;
@@ -32,38 +43,52 @@ async function connect(room, onMessage, opts = {}) {
   countHandler = opts.onCount || null;
   _displayName = opts.displayName || 'anonymous';
 
+  presenceMap.clear();
+  typingMap.clear();
+
   try {
     client = await new ClaspBuilder(RELAY_URL)
       .withName(`sawm-${clientId.slice(0, 8)}`)
       .withFeatures(['param', 'event'])
-      .withReconnect(true, 3000)
+      .withReconnect(true)
       .connect();
 
-    // Subscribe to chat messages (ephemeral events)
-    const unMsg = client.on(roomAddr(room, 'messages'), (value, address) => {
-      if (!messageHandler || !value) return;
-      // value is the message object emitted
-      if (value.id && value.content) {
-        messageHandler(value, false);
+    // Subscribe to chat messages (ephemeral EMIT events)
+    const unMsg = client.on(roomAddr(room, 'messages'), (payload) => {
+      if (!messageHandler || !payload) return;
+      if (payload.id && payload.content) {
+        messageHandler(payload, false);
       }
     });
     unsubs.push(unMsg);
 
-    // Subscribe to presence (stateful SET - who's online)
-    const unPresence = client.on(roomAddr(room, 'presence/*'), (value, address) => {
+    // Subscribe to presence (stateful SET params)
+    const unPresence = client.subscribe(roomAddr(room, 'presence/*'), (value, address) => {
+      if (value && value.name) {
+        presenceMap.set(address, value);
+      } else {
+        presenceMap.delete(address);
+      }
       if (presenceHandler) presenceHandler();
       if (countHandler) countHandler();
     });
     unsubs.push(unPresence);
 
-    // Subscribe to typing indicators (stateful SET)
-    const unTyping = client.on(roomAddr(room, 'typing/*'), (value, address) => {
+    // Subscribe to typing indicators (stateful SET params)
+    const unTyping = client.subscribe(roomAddr(room, 'typing/*'), (value, address) => {
+      if (value && value.name) {
+        typingMap.set(address, value);
+      } else {
+        typingMap.delete(address);
+      }
       if (typingHandler) typingHandler();
     });
     unsubs.push(unTyping);
 
-    // Subscribe to message history (stateful SET for late joiners)
-    const unHistory = client.on(roomAddr(room, 'history'), (value, address) => {
+    // Subscribe to message history (stateful SET param for late joiners)
+    // subscribe() delivers a SNAPSHOT of current value on connect
+    const historyAddr = roomAddr(room, 'history');
+    const unHistory = client.subscribe(historyAddr, (value) => {
       if (!messageHandler || !value) return;
       if (Array.isArray(value)) {
         value.forEach(msg => {
@@ -79,28 +104,12 @@ async function connect(room, onMessage, opts = {}) {
     setPresence(true);
     presenceInterval = setInterval(() => setPresence(true), 30000);
 
-    // Request current history state
-    try {
-      const history = await client.get(roomAddr(room, 'history'));
-      if (Array.isArray(history) && messageHandler) {
-        history.forEach(msg => {
-          if (msg && msg.id && msg.content) {
-            messageHandler(msg, true);
-          }
-        });
-      }
-    } catch (e) {
-      // No history yet, that's fine
-    }
-
   } catch (e) {
     console.warn('clasp connect failed:', e);
-    // Will auto-reconnect via ClaspBuilder config
   }
 }
 
 function disconnect() {
-  // Clear presence
   if (client && client.connected && currentRoom) {
     try {
       client.set(roomAddr(currentRoom, `presence/${clientId}`), null);
@@ -108,7 +117,6 @@ function disconnect() {
     } catch (e) { /* ignore */ }
   }
 
-  // Unsubscribe all
   unsubs.forEach(fn => { try { fn(); } catch (e) { /* ignore */ } });
   unsubs = [];
 
@@ -116,6 +124,9 @@ function disconnect() {
   clearTimeout(typingTimer);
   presenceInterval = null;
   typingTimer = null;
+
+  presenceMap.clear();
+  typingMap.clear();
 
   if (client) {
     client.close();
@@ -200,37 +211,21 @@ function isConnected() {
 }
 
 function getPresenceCount() {
-  // Count presence params from cache
-  if (!client || !currentRoom) return 0;
-  let count = 0;
-  // We can check cached presence values
-  // The subscriptions will have populated the client's param cache
-  // For now, return a simple count based on cached values
-  try {
-    const signals = client.querySignals(roomAddr(currentRoom, 'presence/*'));
-    count = signals.length;
-  } catch (e) {
-    count = 0;
-  }
-  return Math.max(count, 1); // At least us
+  // Count from locally tracked presence map
+  return Math.max(presenceMap.size, 1);
 }
 
 function getTypingUsers() {
-  if (!client || !currentRoom) return [];
   const users = [];
-  try {
-    const now = Date.now();
-    const signals = client.querySignals(roomAddr(currentRoom, 'typing/*'));
-    for (const sig of signals) {
-      const val = client.cached(sig.address);
-      if (val && val.name && val.at && (now - val.at) < 5000) {
-        // Don't show ourselves typing
-        if (!sig.address.endsWith(`/${clientId}`)) {
-          users.push(val.name);
-        }
+  const now = Date.now();
+  for (const [address, val] of typingMap) {
+    if (val && val.name && val.at && (now - val.at) < 5000) {
+      // Don't show ourselves typing
+      if (!address.endsWith(`/${clientId}`)) {
+        users.push(val.name);
       }
     }
-  } catch (e) { /* ignore */ }
+  }
   return users;
 }
 

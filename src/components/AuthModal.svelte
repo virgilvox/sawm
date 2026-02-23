@@ -5,6 +5,7 @@
 
   const auth = getAuth();
   let mode = $state('signin');
+  let displayName = $state('');
   let email = $state('');
   let password = $state('');
 
@@ -17,10 +18,11 @@
     if (!email || !password) return;
     const success = mode === 'signin'
       ? await signIn(email, password)
-      : await signUp(email, password);
+      : await signUp(email, password, displayName.trim());
     if (success) {
       email = '';
       password = '';
+      displayName = '';
       onclose();
     }
   }
@@ -42,6 +44,11 @@
 
     {#if auth.error}
       <div class="auth-error">{auth.error}</div>
+    {/if}
+
+    {#if mode === 'signup'}
+      <label for="authName">display name</label>
+      <input type="text" id="authName" bind:value={displayName} onkeydown={handleKeydown} placeholder="what should we call you?">
     {/if}
 
     <label for="authEmail">email</label>

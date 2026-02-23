@@ -14,6 +14,19 @@ export const getForDate = query({
   },
 });
 
+export const getRange = query({
+  args: { startDate: v.string(), endDate: v.string() },
+  handler: async (ctx, args) => {
+    const userId = await auth.getUserId(ctx);
+    if (!userId) return [];
+    const logs = await ctx.db
+      .query("fasting_logs")
+      .withIndex("by_user_date", (q) => q.eq("userId", userId).gte("date", args.startDate))
+      .collect();
+    return logs.filter((l) => l.date <= args.endDate);
+  },
+});
+
 export const upsert = mutation({
   args: {
     date: v.string(),

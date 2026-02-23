@@ -14,7 +14,7 @@ export function getGuidance(nowMins, fajrMins, maghribMins, ishaMins) {
         { text: 'Suhoor', isTerm: true },
         { text: ' yet, aim for complex carbs, protein, and plenty of water. oats, eggs, dates, and avocado are your best friends.' },
         { break: true },
-        { text: 'drink water steadily — don\'t chug it all at once. your body absorbs it better in sips over time.' },
+        { text: 'drink water steadily. don\'t chug it all at once. your body absorbs it better in sips over time.' },
       ],
     };
   }
@@ -24,7 +24,7 @@ export function getGuidance(nowMins, fajrMins, maghribMins, ishaMins) {
       phase: 'suhoor',
       title: 'suhoor time',
       parts: [
-        { text: 'eat now if you haven\'t. focus on slow-burning fuel: whole grains, eggs, bananas, nut butter, yogurt. avoid salty or fried food — it\'ll make you thirstier.' },
+        { text: 'eat now if you haven\'t. focus on slow-burning fuel: whole grains, eggs, bananas, nut butter, yogurt. avoid salty or fried food. it\'ll make you thirstier.' },
         { break: true },
         { text: `drink water with intention. 2-3 glasses now. you've got ${formatCountdown(fajrMins - nowMins)} until ` },
         { text: 'Fajr', isTerm: true },
@@ -38,7 +38,7 @@ export function getGuidance(nowMins, fajrMins, maghribMins, ishaMins) {
       phase: 'early fast',
       title: 'beginning of fast',
       parts: [
-        { text: 'your fast has begun. the first few hours are usually the easiest — your body is still running on ' },
+        { text: 'your fast has begun. the first few hours are usually the easiest. your body is still running on ' },
         { text: 'Suhoor', isTerm: true },
         { text: ' fuel.' },
         { break: true },
@@ -52,7 +52,7 @@ export function getGuidance(nowMins, fajrMins, maghribMins, ishaMins) {
       phase: 'mid-morning',
       title: 'holding steady',
       parts: [
-        { text: 'energy may start to dip. this is normal. avoid intense physical activity if you can. take it easy at work — your body is adjusting.' },
+        { text: 'energy may start to dip. this is normal. avoid intense physical activity if you can. take it easy at work. your body is adjusting.' },
         { break: true },
         { text: 'if you feel a headache coming on, it\'s likely caffeine withdrawal or mild dehydration from yesterday. it gets easier each day. sit somewhere cool if you can.' },
       ],
@@ -80,9 +80,9 @@ export function getGuidance(nowMins, fajrMins, maghribMins, ishaMins) {
       parts: [
         { text: `you're in the home stretch. ${formatCountdown(maghribMins - nowMins)} until ` },
         { text: 'Maghrib', isTerm: true },
-        { text: '. if you\'re preparing food, keep it simple tonight — soup, dates, water, and a light main.' },
+        { text: '. if you\'re preparing food, keep it simple tonight. soup, dates, water, and a light main.' },
         { break: true },
-        { text: 'when you break fast: start with dates and water. eat slowly. your stomach has been empty — sudden large meals can cause pain and bloating. gentle is the way.' },
+        { text: 'when you break fast: start with dates and water. eat slowly. your stomach has been empty. sudden large meals can cause pain and bloating. gentle is the way.' },
       ],
     };
   }
@@ -90,9 +90,9 @@ export function getGuidance(nowMins, fajrMins, maghribMins, ishaMins) {
   if (nowMins >= maghribMins && nowMins < maghribMins + 60) {
     return {
       phase: 'iftar',
-      title: 'iftar — break your fast',
+      title: 'iftar / break your fast',
       parts: [
-        { text: 'you made it through another day. start with water and dates, then a light soup or salad. wait 15-20 minutes before your main meal — your stomach needs time to wake up.' },
+        { text: 'you made it through another day. start with water and dates, then a light soup or salad. wait 15-20 minutes before your main meal. your stomach needs time to wake up.' },
         { break: true },
         { text: 'hydrate steadily from now until ' },
         { text: 'Suhoor', isTerm: true },
@@ -108,7 +108,7 @@ export function getGuidance(nowMins, fajrMins, maghribMins, ishaMins) {
       parts: [
         { text: 'this is your refuel time. eat balanced meals, keep drinking water, and take it easy. many people attend ' },
         { text: 'Taraweeh', isTerm: true },
-        { text: ' prayers in the evening — these are optional but meaningful.' },
+        { text: ' prayers in the evening. these are optional but meaningful.' },
         { break: true },
         { text: 'try to get a snack with protein and fiber in before bed so tomorrow\'s fast starts easier.' },
       ],
@@ -121,7 +121,7 @@ export function getGuidance(nowMins, fajrMins, maghribMins, ishaMins) {
     parts: [
       { text: 'rest when you can. set an alarm for ' },
       { text: 'Suhoor', isTerm: true },
-      { text: ' if you need to — don\'t skip it. even a few dates, yogurt, and water makes a difference.' },
+      { text: ' if you need to. don\'t skip it. even a few dates, yogurt, and water makes a difference.' },
       { break: true },
       { text: 'keep sipping water before bed. your body will thank you tomorrow.' },
     ],

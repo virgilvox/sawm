@@ -6,7 +6,7 @@
 </script>
 
 <div class="section fade-in">
-  <div class="section-header">glossary — new to this?</div>
+  <div class="section-header">glossary / new to this?</div>
   <button class="glossary-toggle" class:open onclick={() => open = !open}>
     <span>tap to see terms explained in plain language</span>
     <span class="arrow">

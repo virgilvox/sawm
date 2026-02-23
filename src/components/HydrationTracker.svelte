@@ -66,7 +66,7 @@
     {:else}
       <div class="hydration-disabled">
         hydration tracking activates during the eating window.<br>
-        focus on your fast — water comes at <Term word="Maghrib" />.
+        focus on your fast. water comes at <Term word="Maghrib" />.
       </div>
     {/if}
   </div>

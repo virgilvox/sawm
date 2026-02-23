@@ -13,9 +13,13 @@
   import { getLocation } from '../stores/location.svelte.js';
   import { getPrayerTimes } from '../stores/prayerTimes.svelte.js';
 
-  import { getAuth } from '../stores/auth.svelte.js';
+  import { getAuth, signOut, updateDisplayName } from '../stores/auth.svelte.js';
 
   let { onsettingsopen, onauthopen } = $props();
+
+  let showProfileMenu = $state(false);
+  let editingName = $state(false);
+  let nameInput = $state('');
 
   const location = getLocation();
   const pt = getPrayerTimes();
@@ -79,7 +83,7 @@
   const locationDisplay = $derived.by(() => {
     if (location.locationName) {
       const methodName = pt.meta?.method?.name || '';
-      return methodName ? `${location.locationName} — ${methodName}` : location.locationName;
+      return methodName ? `${location.locationName} / ${methodName}` : location.locationName;
     }
     return '';
   });
@@ -87,22 +91,48 @@
 
 <div class="header fade-in">
   <div class="header-top">
-    <div class="logo">sawm <span>/ companion</span></div>
+    <div class="logo"><svg class="logo-icon" width="22" height="22" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg"><rect width="120" height="120" rx="16" fill="#0a0a0a"/><g transform="translate(60,58)"><circle cx="0" cy="0" r="42" fill="none" stroke="#4a4a4a" stroke-width="5"/><path d="M0-42A42 42 0 1 1-31 28.5" fill="none" stroke="#d4a043" stroke-width="5" stroke-linecap="round"/><circle cx="0" cy="0" r="19" fill="#d4a043"/><circle cx="7" cy="-5" r="16" fill="#0a0a0a"/></g></svg> sawm <span>/ companion</span></div>
     <div class="header-right">
       <div class="header-meta">{dateStr}</div>
-      <button class="profile-btn" onclick={onauthopen} aria-label={auth.isAuthenticated ? 'Profile' : 'Sign in'}>
-        {#if auth.isAuthenticated}
+      <div class="profile-wrap">
+        <button class="profile-btn" onclick={() => auth.isAuthenticated ? showProfileMenu = !showProfileMenu : onauthopen()} aria-label={auth.isAuthenticated ? 'Profile' : 'Sign in'}>
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
             <circle cx="8" cy="5" r="3"/>
             <path d="M2 14c0-3 2.5-5 6-5s6 2 6 5"/>
           </svg>
-        {:else}
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="8" cy="5" r="3"/>
-            <path d="M2 14c0-3 2.5-5 6-5s6 2 6 5"/>
-          </svg>
+        </button>
+        {#if showProfileMenu}
+          <!-- svelte-ignore a11y_click_events_have_key_events a11y_no_static_element_interactions -->
+          <div class="profile-dropdown-overlay" onclick={() => showProfileMenu = false}></div>
+          <div class="profile-dropdown">
+            <div class="profile-dropdown-name">
+              {#if editingName}
+                <input
+                  type="text"
+                  class="profile-name-input"
+                  bind:value={nameInput}
+                  onkeydown={(e) => {
+                    if (e.key === 'Enter' && nameInput.trim()) {
+                      updateDisplayName(nameInput.trim());
+                      editingName = false;
+                    }
+                    if (e.key === 'Escape') editingName = false;
+                  }}
+                  placeholder="display name"
+                />
+                <button class="profile-name-save" onclick={() => { if (nameInput.trim()) { updateDisplayName(nameInput.trim()); editingName = false; } }}>save</button>
+              {:else}
+                <span>{auth.user?.displayName || auth.user?.email || 'signed in'}</span>
+                <button class="profile-name-edit" onclick={() => { nameInput = auth.user?.displayName || ''; editingName = true; }} aria-label="Edit display name">
+                  <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 1.5l2 2L4 10H2v-2z"/></svg>
+                </button>
+              {/if}
+            </div>
+            <div class="profile-dropdown-email">{auth.user?.email || ''}</div>
+            <button class="profile-dropdown-btn" onclick={async () => { showProfileMenu = false; editingName = false; await signOut(); }}>sign out</button>
+          </div>
         {/if}
-      </button>
+      </div>
     </div>
   </div>
   <div class="ramadan-day">{dayLabel}</div>
@@ -149,9 +179,10 @@
   <Glossary />
 
   <div class="footer fade-in">
-    sawm — a fasting companion<br>
-    built with care. no ads. no tracking. no corporate nonsense.<br>
-    prayer times via <a href="https://aladhan.com" target="_blank" rel="noopener">aladhan.com</a>
+    sawm / a fasting companion<br>
+    made in mesa, az by <a href="https://lumencanvas.studio" target="_blank" rel="noopener">lumencanvas</a><br>
+    prayer times via <a href="https://aladhan.com" target="_blank" rel="noopener">aladhan.com</a><br>
+    <span class="footer-palestine">🇵🇸 <a href="https://www.notechforapartheid.com/" target="_blank" rel="noopener">free palestine</a></span>
   </div>
 {:else}
   <div class="loading">

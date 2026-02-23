@@ -3,6 +3,15 @@
 
   let { data = null, onsave } = $props();
 
+  let showSaved = $state(false);
+  let saveTimer;
+
+  function flashSaved() {
+    showSaved = true;
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(() => { showSaved = false; }, 1500);
+  }
+
   let completed = $state(false);
   let suhoorTime = $state('');
   let iftarTime = $state('');
@@ -25,6 +34,7 @@
       iftarTime,
       notes,
     });
+    flashSaved();
   }
 
   function toggleFasted() {
@@ -34,7 +44,7 @@
 </script>
 
 <div class="section">
-  <div class="section-header">fasting log</div>
+  <div class="section-header">fasting log {#if showSaved}<span class="save-indicator">saved</span>{/if}</div>
   <div class="fast-log">
     <button class="fast-toggle" class:active={completed} onclick={toggleFasted}>
       <div class="fast-toggle-switch"></div>

@@ -52,7 +52,12 @@ export async function fetchNearbyMosques(lat, lng, radiusKm = 5) {
   return mosques;
 }
 
-export function formatDistance(km) {
+export function formatDistance(km, unit = 'km') {
+  if (unit === 'mi') {
+    const mi = km * 0.621371;
+    if (mi < 0.1) return `${Math.round(mi * 5280)}ft`;
+    return `${mi.toFixed(1)}mi`;
+  }
   if (km < 1) return `${Math.round(km * 1000)}m`;
   return `${km.toFixed(1)}km`;
 }

@@ -3,6 +3,15 @@
 
   let { data = null, onsave } = $props();
 
+  let showSaved = $state(false);
+  let saveTimer;
+
+  function flashSaved() {
+    showSaved = true;
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(() => { showSaved = false; }, 1500);
+  }
+
   const prayers = [
     { key: 'fajr', name: 'Fajr', required: true },
     { key: 'dhuhr', name: 'Dhuhr', required: true },
@@ -32,6 +41,7 @@
   function toggle(key) {
     checked[key] = !checked[key];
     onsave({ ...checked, date: todayStr() });
+    flashSaved();
   }
 
   const completedCount = $derived(
@@ -40,7 +50,7 @@
 </script>
 
 <div class="section">
-  <div class="section-header">prayers today — {completedCount}/5</div>
+  <div class="section-header">prayers today / {completedCount}/5 {#if showSaved}<span class="save-indicator">saved</span>{/if}</div>
   <div class="prayer-tracker">
     {#each prayers as prayer}
       <button
